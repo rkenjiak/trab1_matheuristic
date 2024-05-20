@@ -35,7 +35,7 @@ extern "C" {
   
 int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur);
 
-/** creates the aleatoria_crtp primal heuristic and includes it in SCIP */
+/** creates the gulosa_crtp primal heuristic and includes it in SCIP */
 SCIP_RETCODE SCIPincludeHeurGulosa(
    SCIP*                 scip                /**< SCIP data structure */
    );

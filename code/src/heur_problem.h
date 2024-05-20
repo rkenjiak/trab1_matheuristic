@@ -14,6 +14,10 @@ typedef struct{
 } candidatoT;
 
 int randomIntegerB (int low, int high);
+void swap(dvetor *a, dvetor* b);
+int partition(dvetor *arr, int low, int high);
+void quickSort(dvetor *arr, int low, int high);
+
 int getLPsolution(SCIP* scip, SCIP_VAR** pvars, int *pn1, int *pnfrac, int *pn0, int *pnlpcands);
 void printLPvars(SCIP* scip, SCIP_VAR** pvars, int n1, int nfrac, int n0);
 int updateSolution(SCIP_VAR* var, instanceT* I, int* covered, int *nCovered, int *cost);

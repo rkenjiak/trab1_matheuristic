@@ -18,6 +18,31 @@ int randomIntegerB (int low, int high)
   k = d * (high - low + 1);
   return low + k;
 }
+void swap(dvetor *a, dvetor* b){
+    dvetor aux = *a;
+    *a = *b;
+    *b = aux;
+}
+int partition(dvetor *arr, int low, int high){
+    float pivot = arr[high].densidade;
+    int i = low - 1;
+    for(int j=low; j <= high - 1; j++){
+        if(arr[j].densidade >= pivot){
+            i++;
+            swap(&arr[i],&arr[j]);
+        }
+    }
+    swap(&arr[i+1],&arr[high]);
+    return(i+1);
+}
+void quickSort(dvetor *arr, int low, int high){
+    if(low<high){
+        int pi = partition(arr,low,high);
+        quickSort(arr,low,pi-1);
+        quickSort(arr,pi+1,high);
+    }
+}
+
 /**
  * @brief split lambda variables in three groups according to its LP value:
          varlist[0..n1-1]     = whose LP value is equal to 1.0;

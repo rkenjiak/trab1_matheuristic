@@ -192,17 +192,6 @@ int aleatoria(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
           // update solution value
           custo += I->item[i].value;
           infeasible = residual < 0?1:0;
-
-          /*
-          for(j=0;j<I->item[selected].nsets;j++){
-            ii = I->item[selected].set[j];
-            // update the value if the item will exceed the maximum allowed for the set
-            if(forfeit[ii] >= I->S[ii].h){ 
-               valor -= I->S[ii].d;
-               tempViolations += 1; ///////////////////atualizar violations?
-            }
-         }
-         */
           
 #ifdef DEBUG_ALEATORIA
           printf("\nSelected fixed var= %s. TotalItems=%d value=%d residual=%d infeasible=%d", SCIPvarGetName(var), nInSolution, custo, residual, infeasible);

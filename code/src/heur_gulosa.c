@@ -28,7 +28,7 @@
 #include "heur_problem.h"
 /* configuracao da heuristica */
 #define HEUR_NAME             "gulosa"
-#define HEUR_DESC             "gulosa prial heuristic template"
+#define HEUR_DESC             "gulosa primal heuristic template"
 #define HEUR_DISPCHAR         'g'
 #define HEUR_PRIORITY         2 /**< heuristics of high priorities are called first */
 #define HEUR_FREQ             1 /**< heuristic call frequency. 1 = in all levels of the B&B tree */
@@ -120,7 +120,6 @@ SCIP_DECL_HEUREXITSOL(heurExitsolGulosa)
    return SCIP_OKAY;
 }
 
-
 /**
  * @brief Core of the gulosa heuristic: it builds one solution for the problem by gulosa procedure.
  *
@@ -135,11 +134,13 @@ int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
    unsigned int stored;
    int nvars;
    int *covered, n, custo, nCovered, *cand, nCands, selected, s, *forfeit, valor, violations, tempViolations;
+   dvetor *vetDensidade;
+
    SCIP_VAR *var, **solution, **varlist;
    //  SCIP* scip_cp;
    SCIP_Real bestUb;
    SCIP_PROBDATA* probdata;
-   int i, residual, j, peso, nS, ii, k; //k?
+   int i, residual, j, peso, nS, ii, m, k; //k?
    instanceT* I;
    
    found = 0;
@@ -163,6 +164,7 @@ int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
    covered = (int*) calloc(n,sizeof(int)); // inicializa que nenhum item estah na solucao
    forfeit = (int*) calloc(nS,sizeof(int)); // inicializa que nenhum forfeit estah coberto na solucao
    cand = (int*) malloc(n*sizeof(int));
+   // vetDensidade = (dvetor *) malloc(n*sizeof(dvetor));
    nInSolution = 0;
    nCovered = 0;
    nCands = 0;
@@ -213,12 +215,20 @@ int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
         }
       }
    }
-   // contar violations?
+   // criar vetor que utiliza densidade de valor/peso  
+   vetDensidade = (dvetor *) malloc(n*sizeof(dvetor)); 
+   for(i=0;i<n;i++){
+    vetDensidade[i].label = i;
+    if(!covered[i]) vetDensidade[i].densidade = I->item[i].value/((float) I->item[i].weight);
+    else vetDensidade[i].densidade = 0;
+   }
+   quickSort(vetDensidade,0, n-1); // esta em ordem decrescente
 
-   // complete solution using items not fixed (not covered) TODO GULOSA
+   // complete solution using items not fixed (not covered) 
    for(i=0;i<n && !infeasible && nCands > 0 && residual>0;i++){
       tempViolations = violations;
-      s = randomIntegerB (0, nCands-1);
+      if(i==n) printf("@@@@@@@@@@@@@@@@@@@@-%d-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",nCands);
+      s = vetDensidade[i].label;
       selected = cand[s]; // selected candidate
       cand[s] = cand[--nCands]; // remove selected candidate
       // only accept the item if not covered yet and not exceed the capacity
@@ -310,6 +320,7 @@ int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
    free(solution);
    free(forfeit);
    free(covered);
+   free(vetDensidade);
    return found;
 }
 
