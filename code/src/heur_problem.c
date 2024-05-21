@@ -24,9 +24,6 @@ void troca(theap *a, theap *b) {
     *a = *b;
     *b = aux;
 }
-int cmp(void *, void *){
-   return;
-}
 int pai(int n) {
     return (n - 1) / 2;
 }

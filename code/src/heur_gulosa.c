@@ -230,12 +230,12 @@ int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
 
    // complete solution using items not fixed (not covered) 
    for(i=0;i<n && !infeasible && nCands > 0 && residual>0;i++){
-      temp = extrai_max(heap,tam);
-      
-      
+      temp = extrai_max(heap,&tam);
+      s = estah(cand,nCands,temp.index);
+      if(s<0)continue;      
       tempViolations = violations;
-      selected = i; // selected candidate
-      cand[i] = cand[--nCands]; // remove selected candidate
+      selected = s; // selected candidate
+      cand[s] = cand[--nCands]; // remove selected candidate
       // only accept the item if not covered yet and not exceed the capacity
       if(!covered[selected] && I->item[selected].weight <= residual){ 
          // compute the real value

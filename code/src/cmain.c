@@ -427,7 +427,7 @@ void printSol(SCIP* scip, char* outputname)
        printf("\nProblem to create solution file: %s", filename);
        return;
      } 
-   fprintf(file, "\n%d ", (int)(-SCIPsolGetOrigObj(bestSolution)+EPSILON)); // z
+   fprintf(file, "%d ", (int)(-SCIPsolGetOrigObj(bestSolution)+EPSILON)); // z
 
    sum = 0; // v   
    for( v=0; v< I->n; v++ )
@@ -478,21 +478,21 @@ void printSol(SCIP* scip, char* outputname)
 	 }
      }
 
-   fprintf(file, "\nv's: ");
+   //fprintf(file, "\nv's: ");
 
-     for( v=0; v< I->nS; v++ ) // v's
-     {
-       solval = SCIPgetSolVal(scip, bestSolution, vars[v+I->n]);
-       if( solval > EPSILON ) fprintf(file, "%d ", I->S[v].j);
-     }
+     //for( v=0; v< I->nS; v++ ) // v's
+     //{
+      // solval = SCIPgetSolVal(scip, bestSolution, vars[v+I->n]);
+      // if( solval > EPSILON ) fprintf(file, "%d ", I->S[v].j);
+    // }
 
 
    fprintf(file, "\n");
    //
-   fprintf(file, "Parameters settings file=%s\n", param.parameter_stamp);
-   fprintf(file, "Instance file=%s\n", SCIPgetProbName(scip));
-   ct = localtime(&t);
-   fprintf(file, "Date=%d-%.2d-%.2d\nTime=%.2d:%.2d:%.2d\n", ct->tm_year+1900, ct->tm_mon, ct->tm_mday, ct->tm_hour, ct->tm_min, ct->tm_sec);
+   //fprintf(file, "Parameters settings file=%s\n", param.parameter_stamp);
+   //fprintf(file, "Instance file=%s\n", SCIPgetProbName(scip));
+   //ct = localtime(&t);
+   //fprintf(file, "Date=%d-%.2d-%.2d\nTime=%.2d:%.2d:%.2d\n", ct->tm_year+1900, ct->tm_mon, ct->tm_mday, ct->tm_hour, ct->tm_min, ct->tm_sec);
    fclose(file);
 }
 
