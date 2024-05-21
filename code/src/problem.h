@@ -31,9 +31,10 @@ typedef struct{
 } instanceT;
 
 typedef struct{
-  int label;
+  int index;
   float densidade;
-} dvetor;
+} theap;
+
 
 void freeInstance(instanceT* I);
 void createInstance(instanceT** I, int n, int nS, int C);

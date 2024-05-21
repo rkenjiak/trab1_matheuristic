@@ -18,30 +18,75 @@ int randomIntegerB (int low, int high)
   k = d * (high - low + 1);
   return low + k;
 }
-void swap(dvetor *a, dvetor* b){
-    dvetor aux = *a;
+
+void troca(theap *a, theap *b) {
+    theap aux = *a;
     *a = *b;
     *b = aux;
 }
-int partition(dvetor *arr, int low, int high){
-    float pivot = arr[high].densidade;
-    int i = low - 1;
-    for(int j=low; j <= high - 1; j++){
-        if(arr[j].densidade >= pivot){
-            i++;
-            swap(&arr[i],&arr[j]);
-        }
-    }
-    swap(&arr[i+1],&arr[high]);
-    return(i+1);
+int cmp(void *, void *){
+   return;
 }
-void quickSort(dvetor *arr, int low, int high){
-    if(low<high){
-        int pi = partition(arr,low,high);
-        quickSort(arr,low,pi-1);
-        quickSort(arr,pi+1,high);
+int pai(int n) {
+    return (n - 1) / 2;
+}
+int filho_esq(int n) {
+    return n * 2 + 1;
+}
+int filho_dir(int n) {
+    return n * 2 + 2;
+}
+void desce(theap v[], int tam, int n) {
+    int maior = n;
+    int esq = filho_esq(n);
+    int dir = filho_dir(n);
+
+    if (esq < tam && v[esq].densidade > v[maior].densidade)
+        maior = esq;
+    if (dir < tam && v[dir].densidade > v[maior].densidade)
+        maior = dir;
+
+    if (maior != n) {
+        troca(&v[maior], &v[n]);
+        desce(v, tam, maior);
     }
 }
+void sobe(theap v[], int pos) {
+    while(v[pai(pos)].densidade < v[pos].densidade){
+      troca(&v[pai(pos)],&v[pos]);
+      pos = pai(pos);
+    }
+}
+void constroi_heap(theap v[], int tam) {
+    for (int n = pai(tam-1); n >= 0; n--)
+        desce(v, tam, n);
+}
+int insere_elemento(theap v[], int *tam, int max, theap novo) {
+    int ret = EXIT_FAILURE;
+    if (*tam <= max){
+      v[*tam] = novo;
+      sobe(v, *tam);
+      *tam += 1;
+      ret = EXIT_SUCCESS;
+    }
+    return ret;
+}
+theap extrai_max(theap v[], int *tam) {
+    theap max = v[0];
+    *tam -= 1;
+    v[0] = v[*tam];
+    desce(v, *tam, 0);
+    return max;
+}
+int estah(int *v, int tam, int index){ //-1 nao achou, >=0 achou e retorna ql indice
+   int ret=-1;
+   for(int j = 0;j<tam;j++){
+      if(v[j]==index) ret=j;
+   }
+   return ret;
+}
+
+
 
 /**
  * @brief split lambda variables in three groups according to its LP value:

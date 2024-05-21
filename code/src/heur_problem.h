@@ -13,10 +13,20 @@ typedef struct{
    SCIP_Real solval;
 } candidatoT;
 
+
+
+
 int randomIntegerB (int low, int high);
-void swap(dvetor *a, dvetor* b);
-int partition(dvetor *arr, int low, int high);
-void quickSort(dvetor *arr, int low, int high);
+void troca(theap *a, theap *b); 
+int pai(int n);
+int filho_esq(int n);
+int filho_dir(int n); 
+void desce(theap v[], int tam, int n); 
+void sobe(theap v[], int pos); 
+void constroi_heap(theap v[], int tam); 
+int insere_elemento(theap v[], int *tam, int max, theap novo); 
+theap extrai_max(theap v[], int *tam); 
+int estah(int *v, int tam, int index);
 
 int getLPsolution(SCIP* scip, SCIP_VAR** pvars, int *pn1, int *pnfrac, int *pn0, int *pnlpcands);
 void printLPvars(SCIP* scip, SCIP_VAR** pvars, int n1, int nfrac, int n0);

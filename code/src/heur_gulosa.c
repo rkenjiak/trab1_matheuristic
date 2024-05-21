@@ -133,14 +133,16 @@ int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
    int found, infeasible, nInSolution;
    unsigned int stored;
    int nvars;
-   int *covered, n, custo, nCovered, *cand, nCands, selected, s, *forfeit, valor, violations, tempViolations;
-   dvetor *vetDensidade;
+   int *covered, n, custo, nCovered, *cand, nCands, selected, s, *forfeit, valor, violations, tempViolations; 
+   int tam, max;
+   theap *heap;
+   theap temp;
 
    SCIP_VAR *var, **solution, **varlist;
    //  SCIP* scip_cp;
    SCIP_Real bestUb;
    SCIP_PROBDATA* probdata;
-   int i, residual, j, peso, nS, ii, m, k; //k?
+   int i, residual, j, peso, nS, ii, k; //k?
    instanceT* I;
    
    found = 0;
@@ -164,7 +166,7 @@ int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
    covered = (int*) calloc(n,sizeof(int)); // inicializa que nenhum item estah na solucao
    forfeit = (int*) calloc(nS,sizeof(int)); // inicializa que nenhum forfeit estah coberto na solucao
    cand = (int*) malloc(n*sizeof(int));
-   // vetDensidade = (dvetor *) malloc(n*sizeof(dvetor));
+   heap = (theap *) malloc(n*sizeof(theap));
    nInSolution = 0;
    nCovered = 0;
    nCands = 0;
@@ -172,6 +174,7 @@ int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
    residual = I->C;
    violations = 0, tempViolations = 0;
    k = I->k; /// k?
+   max=n;
 
    // first, select all variables already fixed in 1.0
    for(i=0;i<nvars;i++){
@@ -215,22 +218,24 @@ int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
         }
       }
    }
-   // criar vetor que utiliza densidade de valor/peso  
-   vetDensidade = (dvetor *) malloc(n*sizeof(dvetor)); 
-   for(i=0;i<n;i++){
-    vetDensidade[i].label = i;
-    if(!covered[i]) vetDensidade[i].densidade = I->item[i].value/((float) I->item[i].weight);
-    else vetDensidade[i].densidade = 0;
+   // inserir dados na heap de densidade
+   tam = 0;
+   for(i=0;i<max;i++){
+      heap[i].index = I->item[i].label;
+      heap[i].densidade = ((float)I->item[i].value)/((float)I->item[i].weight);
+      tam+=1;
    }
-   quickSort(vetDensidade,0, n-1); // esta em ordem decrescente
+   assert(tam==max);
+   constroi_heap(heap, max);
 
    // complete solution using items not fixed (not covered) 
    for(i=0;i<n && !infeasible && nCands > 0 && residual>0;i++){
+      temp = extrai_max(heap,tam);
+      
+      
       tempViolations = violations;
-      if(i==n) printf("@@@@@@@@@@@@@@@@@@@@-%d-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",nCands);
-      s = vetDensidade[i].label;
-      selected = cand[s]; // selected candidate
-      cand[s] = cand[--nCands]; // remove selected candidate
+      selected = i; // selected candidate
+      cand[i] = cand[--nCands]; // remove selected candidate
       // only accept the item if not covered yet and not exceed the capacity
       if(!covered[selected] && I->item[selected].weight <= residual){ 
          // compute the real value
@@ -320,7 +325,7 @@ int gulosa(SCIP* scip, SCIP_SOL** sol, SCIP_HEUR* heur)
    free(solution);
    free(forfeit);
    free(covered);
-   free(vetDensidade);
+   free(heap);
    return found;
 }
 

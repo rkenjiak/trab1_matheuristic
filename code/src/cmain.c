@@ -407,6 +407,7 @@ void printSol(SCIP* scip, char* outputname)
    char filename[SCIP_MAXSTRLEN];
    struct tm * ct;
    const time_t t = time(NULL);
+   int sum;
 
    assert(scip != NULL);
    bestSolution = SCIPgetBestSol(scip);
@@ -426,16 +427,65 @@ void printSol(SCIP* scip, char* outputname)
        printf("\nProblem to create solution file: %s", filename);
        return;
      } 
-   fprintf(file, "\nValue: %lf\nItems: ", -SCIPsolGetOrigObj(bestSolution));
+   fprintf(file, "\n%d ", (int)(-SCIPsolGetOrigObj(bestSolution)+EPSILON)); // z
 
+   sum = 0; // v   
    for( v=0; v< I->n; v++ )
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v]);
+       if( solval > EPSILON ) sum += I->item[v].value;	 
+     }
+    fprintf(file, "%d ", sum);
+
+    sum=0; // d
+    for( v=0; v< I->nS; v++ ) 
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v+I->n]); //
+       if( solval > EPSILON ) sum += I->S[v].d*(solval+EPSILON);	 // truncar
+     }
+    fprintf(file, "%d ", sum);
+
+    sum=0; // p
+    for( v=0; v< I->n; v++ )
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v]);
+       if( solval > EPSILON ) sum += I->item[v].weight;	 
+     }
+    fprintf(file, "%d ", sum);
+
+    sum=0; // r
+    for( v=0; v< I->n; v++ )
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v]);
+       if( solval > EPSILON ) sum += 1;	 
+     }
+    fprintf(file, "%d ", sum);
+
+    sum=0; // t
+    for( v=0; v< I->nS; v++ )
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v+I->n]);
+       if( solval > EPSILON ) sum += (int)(solval+EPSILON);	 //truncar
+     }
+    fprintf(file, "%d\n", sum);
+
+   for( v=0; v< I->n; v++ ) // itens
      {
        solval = SCIPgetSolVal(scip, bestSolution, vars[v]);
        if( solval > EPSILON )
 	 {
-	   fprintf(file, "item %d ", I->item[v].label);
+	   fprintf(file, "%d ", I->item[v].label);
 	 }
      }
+
+   fprintf(file, "\nv's: ");
+
+     for( v=0; v< I->nS; v++ ) // v's
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v+I->n]);
+       if( solval > EPSILON ) fprintf(file, "%d ", I->S[v].j);
+     }
+
 
    fprintf(file, "\n");
    //
