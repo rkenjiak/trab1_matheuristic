@@ -13,7 +13,13 @@ typedef struct{
    SCIP_Real solval;
 } candidatoT;
 
+
+
+
 int randomIntegerB (int low, int high);
+int cmpfunc(tvet *a, tvet *b);
+int estah(int *v, int tam, int index);
+
 int getLPsolution(SCIP* scip, SCIP_VAR** pvars, int *pn1, int *pnfrac, int *pn0, int *pnlpcands);
 void printLPvars(SCIP* scip, SCIP_VAR** pvars, int n1, int nfrac, int n0);
 int updateSolution(SCIP_VAR* var, instanceT* I, int* covered, int *nCovered, int *cost);

@@ -30,6 +30,12 @@ typedef struct{
   itemType *item; /**< data for each item in 0..n-1 */
 } instanceT;
 
+typedef struct{
+  int index;
+  float densidade;
+} tvet;
+
+
 void freeInstance(instanceT* I);
 void createInstance(instanceT** I, int n, int nS, int C);
 void printInstance(instanceT* I);

@@ -18,62 +18,12 @@ int randomIntegerB (int low, int high)
   k = d * (high - low + 1);
   return low + k;
 }
-
-void troca(theap *a, theap *b) {
-    theap aux = *a;
-    *a = *b;
-    *b = aux;
-}
-int pai(int n) {
-    return (n - 1) / 2;
-}
-int filho_esq(int n) {
-    return n * 2 + 1;
-}
-int filho_dir(int n) {
-    return n * 2 + 2;
-}
-void desce(theap v[], int tam, int n) {
-    int maior = n;
-    int esq = filho_esq(n);
-    int dir = filho_dir(n);
-
-    if (esq < tam && v[esq].densidade > v[maior].densidade)
-        maior = esq;
-    if (dir < tam && v[dir].densidade > v[maior].densidade)
-        maior = dir;
-
-    if (maior != n) {
-        troca(&v[maior], &v[n]);
-        desce(v, tam, maior);
-    }
-}
-void sobe(theap v[], int pos) {
-    while(v[pai(pos)].densidade < v[pos].densidade){
-      troca(&v[pai(pos)],&v[pos]);
-      pos = pai(pos);
-    }
-}
-void constroi_heap(theap v[], int tam) {
-    for (int n = pai(tam-1); n >= 0; n--)
-        desce(v, tam, n);
-}
-int insere_elemento(theap v[], int *tam, int max, theap novo) {
-    int ret = EXIT_FAILURE;
-    if (*tam <= max){
-      v[*tam] = novo;
-      sobe(v, *tam);
-      *tam += 1;
-      ret = EXIT_SUCCESS;
-    }
-    return ret;
-}
-theap extrai_max(theap v[], int *tam) {
-    theap max = v[0];
-    *tam -= 1;
-    v[0] = v[*tam];
-    desce(v, *tam, 0);
-    return max;
+int cmpfunc(tvet *a, tvet *b){
+   float arg1 = a->densidade;
+   float arg2 = b->densidade;
+   if(arg1<arg2) return -1;
+   if(arg1>arg2) return 1;
+   return 0;
 }
 int estah(int *v, int tam, int index){ //-1 nao achou, >=0 achou e retorna ql indice
    int ret=-1;

@@ -36,7 +36,7 @@
 #include "probdata_mochila.h"
 #include "parameters_mochila.h"
 //#include "heur_myrounding.h"
-//#include "heur_gulosa.h"
+#include "heur_gulosa.h"
 #include "heur_aleatoria.h"
 const char* output_path;
 const char* current_path = ".";
@@ -151,8 +151,8 @@ SCIP_RETCODE configScip(
    // active heuristic of rounding
    /*   if(param.heur_rounding)
         SCIP_CALL( SCIPincludeHeurMyRounding(scip) );*/
-   /*   if(param.heur_gulosa)
-        SCIP_CALL( SCIPincludeHeurGulosa(scip) ); */
+   if(param.heur_gulosa)
+   SCIP_CALL( SCIPincludeHeurGulosa(scip) );
    if(param.heur_aleatoria)
    SCIP_CALL( SCIPincludeHeurAleatoria(scip) );
    
@@ -407,6 +407,7 @@ void printSol(SCIP* scip, char* outputname)
    char filename[SCIP_MAXSTRLEN];
    struct tm * ct;
    const time_t t = time(NULL);
+   int sum;
 
    assert(scip != NULL);
    bestSolution = SCIPgetBestSol(scip);
@@ -426,23 +427,72 @@ void printSol(SCIP* scip, char* outputname)
        printf("\nProblem to create solution file: %s", filename);
        return;
      } 
-   fprintf(file, "\nValue: %lf\nItems: ", -SCIPsolGetOrigObj(bestSolution));
+   fprintf(file, "%d ", (int)(-SCIPsolGetOrigObj(bestSolution)+EPSILON)); // z
 
+   sum = 0; // v   
    for( v=0; v< I->n; v++ )
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v]);
+       if( solval > EPSILON ) sum += I->item[v].value;	 
+     }
+    fprintf(file, "%d ", sum);
+
+    sum=0; // d
+    for( v=0; v< I->nS; v++ ) 
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v+I->n]); //
+       if( solval > EPSILON ) sum += I->S[v].d*(solval+EPSILON);	 // truncar
+     }
+    fprintf(file, "%d ", sum);
+
+    sum=0; // p
+    for( v=0; v< I->n; v++ )
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v]);
+       if( solval > EPSILON ) sum += I->item[v].weight;	 
+     }
+    fprintf(file, "%d ", sum);
+
+    sum=0; // r
+    for( v=0; v< I->n; v++ )
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v]);
+       if( solval > EPSILON ) sum += 1;	 
+     }
+    fprintf(file, "%d ", sum);
+
+    sum=0; // t
+    for( v=0; v< I->nS; v++ )
+     {
+       solval = SCIPgetSolVal(scip, bestSolution, vars[v+I->n]);
+       if( solval > EPSILON ) sum += (int)(solval+EPSILON);	 //truncar
+     }
+    fprintf(file, "%d\n", sum);
+
+   for( v=0; v< I->n; v++ ) // itens
      {
        solval = SCIPgetSolVal(scip, bestSolution, vars[v]);
        if( solval > EPSILON )
 	 {
-	   fprintf(file, "item %d ", I->item[v].label);
+	   fprintf(file, "%d ", I->item[v].label);
 	 }
      }
 
+   //fprintf(file, "\nv's: ");
+
+     //for( v=0; v< I->nS; v++ ) // v's
+     //{
+      // solval = SCIPgetSolVal(scip, bestSolution, vars[v+I->n]);
+      // if( solval > EPSILON ) fprintf(file, "%d ", I->S[v].j);
+    // }
+
+
    fprintf(file, "\n");
    //
-   fprintf(file, "Parameters settings file=%s\n", param.parameter_stamp);
-   fprintf(file, "Instance file=%s\n", SCIPgetProbName(scip));
-   ct = localtime(&t);
-   fprintf(file, "Date=%d-%.2d-%.2d\nTime=%.2d:%.2d:%.2d\n", ct->tm_year+1900, ct->tm_mon, ct->tm_mday, ct->tm_hour, ct->tm_min, ct->tm_sec);
+   //fprintf(file, "Parameters settings file=%s\n", param.parameter_stamp);
+   //fprintf(file, "Instance file=%s\n", SCIPgetProbName(scip));
+   //ct = localtime(&t);
+   //fprintf(file, "Date=%d-%.2d-%.2d\nTime=%.2d:%.2d:%.2d\n", ct->tm_year+1900, ct->tm_mon, ct->tm_mday, ct->tm_hour, ct->tm_min, ct->tm_sec);
    fclose(file);
 }
 

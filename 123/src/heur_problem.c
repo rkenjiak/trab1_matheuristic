@@ -18,6 +18,23 @@ int randomIntegerB (int low, int high)
   k = d * (high - low + 1);
   return low + k;
 }
+int cmpfunc(tvet *a, tvet *b){
+   float arg1 = a->densidade;
+   float arg2 = b->densidade;
+   if(arg1<arg2) return -1;
+   if(arg1>arg2) return 1;
+   return 0;
+}
+int estah(int *v, int tam, int index){ //-1 nao achou, >=0 achou e retorna ql indice
+   int ret=-1;
+   for(int j = 0;j<tam;j++){
+      if(v[j]==index) ret=j;
+   }
+   return ret;
+}
+
+
+
 /**
  * @brief split lambda variables in three groups according to its LP value:
          varlist[0..n1-1]     = whose LP value is equal to 1.0;

@@ -33,7 +33,7 @@ typedef struct{
 typedef struct{
   int index;
   float densidade;
-} theap;
+} tvet;
 
 
 void freeInstance(instanceT* I);
